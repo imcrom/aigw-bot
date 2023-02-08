@@ -48,7 +48,15 @@ dp = Dispatcher(bot)
 #     )
 #     await requestApi(message, " ".join(inputs), 2)
 
-@dp.message_handler(commands='generate-real')
+@dp.message_handler(commands='start')
+async def gen(message: Message):
+    await bot.send_photo(
+            chat_id=message.chat.id,
+            caption=f'Hello {message.from_user.first_name}, I am AIGW_BOT, I can generate hyper-realistic NSFW images for you.\n\nPlease enter the postive prompts after the /generate_real command. \n\neg.\n`/generate_real 18 years old, blue eyes, teenager`\n\n',
+            photo='https://i.ibb.co/R0Xmf2M/sss.png',
+    )
+
+@dp.message_handler(commands='generate_real')
 async def gen(message: Message):
     inputs = message.text.split()[1:]  # Split the message and get all inputs after the /gen command
     if not inputs:
