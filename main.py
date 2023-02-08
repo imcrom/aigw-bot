@@ -16,39 +16,39 @@ logging.basicConfig(level=logging.INFO)
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
 
-@dp.message_handler(commands='generate-3')
-async def gen(message: Message):
-    inputs = message.text.split()[1:]  # Split the message and get all inputs after the /gen command
-    if not inputs:
-        await bot.send_message(
-            chat_id=message.chat.id,
-            text=f'Hello {message.from_user.first_name}, Please enter the inputs after the /generate command',
-        )
-        return
+# @dp.message_handler(commands='generate-3')
+# async def gen(message: Message):
+#     inputs = message.text.split()[1:]  # Split the message and get all inputs after the /gen command
+#     if not inputs:
+#         await bot.send_message(
+#             chat_id=message.chat.id,
+#             text=f'Hello {message.from_user.first_name}, Please enter the inputs after the /generate command',
+#         )
+#         return
     
-    await bot.send_message(
-        chat_id=message.chat.id,
-        text=f'Hi {message.from_user.first_name}!\n\nPrompts:\n({" ".join(inputs)})\n\n💋💋 I will be processing your image, please wait. 💋💋\n',
-    )
-    await requestApi(message, " ".join(inputs), 3)
+#     await bot.send_message(
+#         chat_id=message.chat.id,
+#         text=f'Hi {message.from_user.first_name}!\n\nPrompts:\n({" ".join(inputs)})\n\n💋💋 I will be processing your image, please wait. 💋💋\n',
+#     )
+#     await requestApi(message, " ".join(inputs), 3)
 
-@dp.message_handler(commands='generate-2')
-async def gen(message: Message):
-    inputs = message.text.split()[1:]  # Split the message and get all inputs after the /gen command
-    if not inputs:
-        await bot.send_message(
-            chat_id=message.chat.id,
-            text=f'Hello {message.from_user.first_name}, Please enter the inputs after the /generate command',
-        )
-        return
+# @dp.message_handler(commands='generate-2')
+# async def gen(message: Message):
+#     inputs = message.text.split()[1:]  # Split the message and get all inputs after the /gen command
+#     if not inputs:
+#         await bot.send_message(
+#             chat_id=message.chat.id,
+#             text=f'Hello {message.from_user.first_name}, Please enter the inputs after the /generate command',
+#         )
+#         return
     
-    await bot.send_message(
-        chat_id=message.chat.id,
-        text=f'Hi {message.from_user.first_name}!\n\nPrompts:\n({" ".join(inputs)})\n\n💋💋 I will be processing your image, please wait. 💋💋\n',
-    )
-    await requestApi(message, " ".join(inputs), 2)
+#     await bot.send_message(
+#         chat_id=message.chat.id,
+#         text=f'Hi {message.from_user.first_name}!\n\nPrompts:\n({" ".join(inputs)})\n\n💋💋 I will be processing your image, please wait. 💋💋\n',
+#     )
+#     await requestApi(message, " ".join(inputs), 2)
 
-@dp.message_handler(commands='generate-1')
+@dp.message_handler(commands='generate-real')
 async def gen(message: Message):
     inputs = message.text.split()[1:]  # Split the message and get all inputs after the /gen command
     if not inputs:
