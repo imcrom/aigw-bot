@@ -12,7 +12,7 @@ from aiogram.types import Message
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from PIL import ImageDraw, ImageFont, Image
 
-API_TOKEN = '5851341881:AAFi9Pt2XTdtNlcH-dPyXtWzeHKfEu_u90A'
+API_TOKEN = '6173455658:AAGrQeUR51i4_4mm0sIvcxV-a_fwV1jK-Os'
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 # Initialize bot and dispatcher
