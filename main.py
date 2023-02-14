@@ -1,112 +1,144 @@
+from telegram import Update
+from telegram.constants import ParseMode
+from telegram import InlineKeyboardMarkup, InlineKeyboardButton
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, PicklePersistence, CallbackQueryHandler
 import logging
-import requests
 import aiohttp
 import aiofiles
 import asyncio
 import math
 import os
+import json
 import io
-from aiogram import Bot, Dispatcher, executor, types
-from aiogram.contrib.middlewares.logging import LoggingMiddleware
-from aiogram.types import Message
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+import telegram
 from PIL import ImageDraw, ImageFont, Image
 
-API_TOKEN = '6173455658:AAGrQeUR51i4_4mm0sIvcxV-a_fwV1jK-Os'
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-# Initialize bot and dispatcher
-bot = Bot(token=API_TOKEN)
-dp = Dispatcher(bot)
+async def hello(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await update.message.reply_photo("https://i.ibb.co/R0Xmf2M/sss.png", caption=f'Hi <b>{update.message.from_user.first_name}</b>!,\n\nI am the all new <b>AI Gone Wild Bot</b>, I can generate NSFW/SFW images\
+                                    \n\nusing a range of different AI models. You can use the <b>/aigw</b> followed by the prompt you want to generate your image with\
+                                        \n\neg.\n<i><b>/aigw</b> 18 years old, blue eyes</i>\n\n',
+                                    parse_mode=ParseMode.HTML
+                                    )
 
-# @dp.message_handler(commands='generate-3')
-# async def gen(message: Message):
-#     inputs = message.text.split()[1:]  # Split the message and get all inputs after the /gen command
-#     if not inputs:
-#         await bot.send_message(
-#             chat_id=message.chat.id,
-#             text=f'Hello {message.from_user.first_name}, Please enter the inputs after the /generate command',
-#         )
-#         return
-    
-#     await bot.send_message(
-#         chat_id=message.chat.id,
-#         text=f'Hi {message.from_user.first_name}!\n\nPrompts:\n({" ".join(inputs)})\n\n💋💋 I will be processing your image, please wait. 💋💋\n',
-#     )
-#     await requestApi(message, " ".join(inputs), 3)
+async def gen(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    inputs = update.message.text.split()[1:]  # Split the message and get all inputs after the /gen command
+    prompt = " ".join(inputs)
+    print(prompt)
 
-# @dp.message_handler(commands='generate-2')
-# async def gen(message: Message):
-#     inputs = message.text.split()[1:]  # Split the message and get all inputs after the /gen command
-#     if not inputs:
-#         await bot.send_message(
-#             chat_id=message.chat.id,
-#             text=f'Hello {message.from_user.first_name}, Please enter the inputs after the /generate command',
-#         )
-#         return
-    
-#     await bot.send_message(
-#         chat_id=message.chat.id,
-#         text=f'Hi {message.from_user.first_name}!\n\nPrompts:\n({" ".join(inputs)})\n\n💋💋 I will be processing your image, please wait. 💋💋\n',
-#     )
-#     await requestApi(message, " ".join(inputs), 2)
-
-@dp.message_handler(commands='start')
-async def gen(message: Message):
-    await bot.send_photo(
-            chat_id=message.chat.id,
-            caption=f'Hello {message.from_user.first_name}, I am AIGW_BOT, I can generate hyper-realistic NSFW images for you.\n\nPlease enter the postive prompts after the /generate_real command. \n\neg.\n`/generate_real 18 years old, blue eyes, teenager`\n\n',
-            photo='https://i.ibb.co/R0Xmf2M/sss.png',
-    )
-
-@dp.message_handler(commands='generate_real')
-async def gen(message: Message):
-    inputs = message.text.split()[1:]  # Split the message and get all inputs after the /gen command
     if not inputs:
-        await bot.send_message(
-            chat_id=message.chat.id,
-            text=f'Hello {message.from_user.first_name}, Please enter the inputs after the /generate command',
+        await update.message.send_message(
+            chat_id=update.message.chat.id,
+            text=f'Hello {update.message.from_user.first_name}, Please enter the inputs after the /aigw command',
         )
         return
-    
-    await bot.send_message(
-        chat_id=message.chat.id,
-        text=f'Hi {message.from_user.first_name}!\n\nPrompts:\n({" ".join(inputs)})\n\n💋💋 I will be processing your image, please wait. 💋💋\n',
+
+    inline_keyboard = InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton("AIGW-Realistic", callback_data={'prompt': prompt, 'model': 'realistic-vision-v13', 'username': update.message.from_user.first_name}),
+                InlineKeyboardButton("AIGW-Protogen", callback_data={'prompt': prompt, 'model': 'protogen-3.4', 'username': update.message.from_user.first_name})
+            ],
+            [
+                InlineKeyboardButton("AIGW-Analog Diffusion", callback_data={'prompt': prompt, 'model': 'analog-diffusion', 'username': update.message.from_user.first_name}),
+            ]
+        ]
     )
-    await requestApi(message, " ".join(inputs), 1)
-   
-   
-   
-async def send_image(message: Message, file_name: str, prompt: str, model: str):
-    with open(f'{file_name}_watermarked.png', 'rb') as file:
-        await bot.send_photo(
-            chat_id=message.chat.id,
-            caption=f'Here is your image, {message.from_user.first_name}!\nI hope you like it 💋.\n\nPROMPT:\n({prompt})\n\nModel: {model}\n\nGenerated by: {message.from_user.first_name}\n\n💋- AIGW_BOT -💋',
-            photo=types.InputFile(file),
-        )
-   
     
-async def processing_update(message: Message, eta: int):
-	await bot.send_message(
-		chat_id=message.chat.id,
-		text=f'Hi {message.from_user.first_name}!\n\nYour image is still being processed, Thank you for waiting. \n\nETA: {math.ceil(eta)} seconds.\n',
-	)
 
-async def error_update(message: Message):
-	await bot.send_message(
-		chat_id=message.chat.id,
-		text=f'Hi {message.from_user.first_name}!\n\nDue to in-demand accesses and requests your image cannot be generated.\n\nPlease try again later.\n',
-	)
+    await context.bot.send_message (
+        chat_id=update.message.chat.id,
+        text=f'<b>{update.message.from_user.first_name},\n\nYou are generating an image...\nPlease choose a style for your image.</b>\n\n<a rel="nofollow" href="https://rb.gy/2yvovo/">https://aigonewild.org/</a>',
+        reply_markup=inline_keyboard,
+        parse_mode=ParseMode.HTML
+    )
+
+    
+async def getModel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    query = update.callback_query
+    await query.answer()
+    json_data = json.dumps(query.data)
+    print(json_data)
+    username = json.loads(json_data)['username']
+
+    datadict = json.loads(json_data)
+    if 'prompt' in datadict:
+        prompt = json.loads(json_data)['prompt']
+        model = json.loads(json_data)['model']
+
+    if 'url' in datadict:
+        print('Upscale detected')
+        await context.bot.send_message(
+            chat_id=query.message.chat.id,
+            text=f'Request of: <b>{username}</b>\n\nPlease wait while we upscale your image.',
+            parse_mode=ParseMode.HTML
+        )
+        await upscale(query.message, datadict['url'], context, username)
+        return 
+
+    await context.bot.send_message (
+        chat_id=query.message.chat.id,
+        text=f'<b>{username}</b> is generating an image.\n\nYour image is being generated...',
+        parse_mode=ParseMode.HTML
+    )
+    await requestApi(query.message, prompt, model, context, username)
+    
+async def upscale(update: Update, downloadUrl, context: ContextTypes.DEFAULT_TYPE, username) -> None:
+    url = 'https://stablediffusionapi.com/api/v3/super_resolution'
+    headers = {
+        'Content-Type': 'application/json'
+    }
+    payload = {
+        "key": "YimEHAg0HxDBkYtZp7X8ZEv7u84XWtt66TgVA78BnGWQlLHe6cdoDQREjpV5",
+        "url": downloadUrl,
+        "scale": 3,
+        "webhook": 'null',
+        "face_enhance": 'false'
+    }
+    while True:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, headers=headers, json=payload) as resp:
+                data = await resp.json()
+                print(data)
+                if resp.status == 200:
+                    if data['status'] == 'success':
+                        try:
+                            await context.bot.send_photo(
+                                chat_id=update.chat.id,
+                                photo=data['output'],
+                                caption=f'Request of: <b>{username}</b>\n\nHere is your upscaled image.',
+                                parse_mode=ParseMode.HTML
+                                
+                            )
+                        except Exception as e:
+                            await context.bot.send_message(
+                                chat_id=update.chat.id,
+                                text=f'Request of: <b>{username}</b>\n\n<b>Sorry, we were unable to upscale your image.</b>\n\n Please try again. {e}',
+                                parse_mode=ParseMode.HTML
+                            )
+                        break
+                    if data['status'] == 'processing' and data['messege'] == 'Request processing':
+                        print('Requesting again')
+                        await upscale(update, downloadUrl, context, username)
+                    if data['status'] == 'processing' and data['messege'] == 'Try to fetch request after given estimated time':
+                        if 'fetch_result' in data:
+                            url = data['fetch_result']
+                        if 'eta' in data:
+                            eta = data['eta']
+                            await processing_update(update, eta, context)
+                            await asyncio.sleep(math.ceil(eta))
+                        continue
+                    if data['status'] == 'error':
+                        await error_update(update, context, username)
+                        break
+                    if data['status'] == 'failed':
+                        continue
+                    else:
+                        raise Exception(f'Request failed with status code {resp.status}')
 
 
+async def requestApi(update: Update, prompt, model, context: ContextTypes.DEFAULT_TYPE, username: str) -> None:
 
-async def requestApi(message, prompt, model):
-    if model == 1:
-        model = 'realistic-vision-v13'
-    if model == 2:
-        model = 'hassanblend-1512'
-    if model == 3:
-        model = 'protogen-3.4'
+    print('MODEL THAT WILL BE USED: ', model)
     url = 'https://stablediffusionapi.com/api/v3/dreambooth'
     headers = {
         'Content-Type': 'application/json'
@@ -123,38 +155,39 @@ async def requestApi(message, prompt, model):
         'seed': None,
         'guidance_scale': 7.5,
         'webhook': None,
-        'track_id': None
+        'track_id': None,
+        #'safety_checker': 'yes'
     }
     
     while True:
         async with aiohttp.ClientSession() as session:
             async with session.post(url, headers=headers, json=payload) as resp:
-                print('sent request')
                 data = await resp.json()
                 print(data)
                 if resp.status == 200:
                     if data['status'] == 'success':
-                        await downloadImage(data['id'], data['output'][0], message, prompt, model)
-                        break
+                        await downloadImage(data['id'], data['output'][0], update, prompt, model, context, username)
+                        return
                     if data['status'] == 'processing' and data['messege'] == 'Request processing':
                         print('Requesting again')
-                        await requestApi(message, prompt, model)
-                    if data['status'] == 'processing':
+                        await requestApi(update, prompt, model, context, username)
+                    if data['status'] == 'processing' and data['messege'] == 'Try to fetch request after given estimated time':
                         if 'fetch_result' in data:
                             url = data['fetch_result']
-                        await processing_update(message, data['eta'])
-                        await asyncio.sleep(math.ceil(data['eta']))
+                        if 'eta' in data:
+                            eta = data['eta']
+                            await processing_update(update, eta, context)
+                            await asyncio.sleep(math.ceil(eta))
                         continue
                     if data['status'] == 'error':
-                        await error_update(message)
+                        await error_update(update, context)
                         break
                     if data['status'] == 'failed':
                         continue
                     else:
                         raise Exception(f'Request failed with status code {resp.status}')
                     
-# Start of watermark implementation
-async def downloadImage(id: int, downloadUrl: str, message: Message, prompt: str, model: str):
+async def downloadImage(id: int, downloadUrl: str, update: Update, prompt: str, model: str, context: ContextTypes.DEFAULT_TYPE, username: str) -> None:
     try:
         async with aiohttp.ClientSession() as session:
             async with session.get(downloadUrl) as resp:
@@ -162,32 +195,81 @@ async def downloadImage(id: int, downloadUrl: str, message: Message, prompt: str
                     f = await aiofiles.open(f'{id}.png', mode='wb')
                     await f.write(await resp.read())
                     # call watermark function
-                    await add_watermark(f'{id}.png', 'https://t.me/aigonewild')
-                    await send_image(message, id, prompt, model)
-                    os.remove(f'{id}.png')
-                    os.remove(f'{id}_watermarked.png')
-                    await f.close()
+                    if await add_watermark(f'{id}.png', 'https://t.me/aigonewild', update, context, username) == False:
+                        await send_image(update, id, prompt, model, downloadUrl, context, username)
+                        os.remove(f'{id}.png')
+                        os.remove(f'{id}_watermarked.png')
+                        await f.close()
     except Exception as e:
         print(f'An error occurred: {e}')
 
-async def add_watermark(file_path: str, watermark_text: str) -> None:
+async def processing_update(update: Update, eta: int, context: ContextTypes.DEFAULT_TYPE) -> None:
+    eta = math.ceil(eta)
+
+
+    text='Image requested by: {0}!\n\nI am still processing your image please wait...\n\n<b>ETA: {1} seconds.</b>\n'.format(update.from_user.first_name, math.ceil(eta))
+ 
+    await context.bot.send_message(
+		chat_id=update.chat.id,
+        text=text,
+        parse_mode=ParseMode.HTML
+	)
+    
+async def error_update(update: Update, context: ContextTypes.DEFAULT_TYPE, username) -> None:
+
+    text= 'Hi {update.from_user.first_name}!\n\nDue to in-demand accesses and requests your image cannot be generated.\n\nPlease try again later.\n'
+    await context.bot.send_message(
+            chat_id=update.chat.id,
+            text = f'{text}'
+        )
+        
+async def send_image(update: Update, file_name: str, prompt: str, model: str, download_url: str, context: ContextTypes.DEFAULT_TYPE, username) -> None:
+    with open(f'{file_name}_watermarked.png', 'rb') as file:
+
+        
+        await context.bot.send_photo(
+            chat_id=update.chat.id,
+            caption= f'Image request of: <b>{username}\n\n</b><b>Successful creation with aigw-{model}</b>!\n\nPrompt:\n(<b>{prompt}</b>)\n\nModel: <b>aigw-{model}</b>\n\n<a target="_blank">https://aigonewild.org/</a>',
+            photo=telegram.InputFile(file),
+            parse_mode=ParseMode.HTML,
+        )
+        
+async def add_watermark(file_path: str, watermark_text: str, update: Update, context: ContextTypes.DEFAULT_TYPE, username) -> None:
     async with aiofiles.open(file_path, "rb") as file:
         img_data = await file.read()
-        with io.BytesIO(img_data) as img_stream:
-            img = Image.open(img_stream)
-            draw = ImageDraw.Draw(img)
-            font = ImageFont.truetype('FeatureMono-Bold.ttf', 24)
+        try:
+            with io.BytesIO(img_data) as img_stream:
+                img = Image.open(img_stream)
+                draw = ImageDraw.Draw(img)
+                font = ImageFont.truetype('FeatureMono-Bold.ttf', 24)
+                
+                textwidth = draw.textlength(watermark_text, font)
+                textheight = font.getsize(watermark_text)[1]
+
+                width, height = img.size
+                x = width / 2 - textwidth / 2
+                y = height - textheight - 300
+
+                draw.text((x+80, y+290), watermark_text, font=font)
             
-            textwidth, textheight = draw.textsize(watermark_text, font)
-            width, height = img.size
-            x = width / 2 - textwidth / 2
-            y = height - textheight - 300
+                new_file_path = file_path.split('.')[0] + '_watermarked.png'
+                img.save(new_file_path)
+                return False
+        except OSError as e:
+            await context.bot.send_message (
+                chat_id=update.chat.id,
+                text=f'<b>Sorry {username}, Something went wrong. You can try regenerating your image again...</b>',
+                parse_mode=ParseMode.HTML
+                )
+            return True
 
-            draw.text((x, y), watermark_text, font=font)
-            new_file_path = file_path.split('.')[0] + '_watermarked.png'
-            img.save(new_file_path)
+                
+                
+                    
+persistence = PicklePersistence(filepath="arbitrarycallbackdatabot")
+app = ApplicationBuilder().token("5851341881:AAFi9Pt2XTdtNlcH-dPyXtWzeHKfEu_u90A").persistence(persistence).arbitrary_callback_data(True).build()
 
-
-dp.middleware.setup(LoggingMiddleware())
-if __name__ == '__main__':
-	executor.start_polling(dp, skip_updates=True )
+app.add_handler(CommandHandler("start", hello))
+app.add_handler(CommandHandler("aigw", gen))
+app.add_handler(CallbackQueryHandler(getModel))
+app.run_polling()
