@@ -26,7 +26,7 @@ async def gen(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     print(prompt)
 
     if not inputs:
-        await update.message.send_message(
+        await context.bot.send_message(
             chat_id=update.message.chat.id,
             text=f'Hello {update.message.from_user.first_name}, Please enter the inputs after the /aigw command',
         )
