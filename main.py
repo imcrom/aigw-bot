@@ -40,6 +40,7 @@ async def gen(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             ],
             [
                 InlineKeyboardButton("AIGW-Analog Diffusion", callback_data={'prompt': prompt, 'model': 'analog-diffusion', 'username': update.message.from_user.first_name}),
+                InlineKeyboardButton("AIGW-AnythingV4", callback_data={'prompt': prompt, 'model': 'anything-v4', 'username': update.message.from_user.first_name}),
             ]
         ]
     )
@@ -180,7 +181,7 @@ async def requestApi(update: Update, prompt, model, context: ContextTypes.DEFAUL
                             await asyncio.sleep(math.ceil(eta))
                         continue
                     if data['status'] == 'error':
-                        await error_update(update, context)
+                        await error_update(update, context, username)
                         break
                     if data['status'] == 'failed':
                         continue
@@ -232,6 +233,10 @@ async def send_image(update: Update, file_name: str, prompt: str, model: str, do
             caption= f'Image request of: <b>{username}\n\n</b><b>Successful creation with aigw-{model}</b>!\n\nPrompt:\n(<b>{prompt}</b>)\n\nModel: <b>aigw-{model}</b>\n\n<a target="_blank">https://aigonewild.org/</a>',
             photo=telegram.InputFile(file),
             parse_mode=ParseMode.HTML,
+            reply_markup=InlineKeyboardMarkup([[
+                InlineKeyboardButton("Variation", callback_data={'prompt': prompt, 'model': model, 'username': username}),
+                InlineKeyboardButton("Upscale", callback_data={'url': download_url, 'username': username}),
+            ]]),
         )
         
 async def add_watermark(file_path: str, watermark_text: str, update: Update, context: ContextTypes.DEFAULT_TYPE, username) -> None:
