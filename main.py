@@ -113,7 +113,7 @@ async def upscale(update: Update, downloadUrl, context: ContextTypes.DEFAULT_TYP
                         except Exception as e:
                             await context.bot.send_message(
                                 chat_id=update.chat.id,
-                                text=f'Request of: <b>{username}</b>\n\n<b>Sorry, we were unable to upscale your image.</b>\n\n Please try again. {e}',
+                                text=f'Request of: <b>{username}</b>\n\n<b>Sorry, we were unable to upscale your image.</b>\n\n Please try again.',
                                 parse_mode=ParseMode.HTML
                             )
                         break
