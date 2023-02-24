@@ -14,8 +14,8 @@ import telegram
 from PIL import ImageDraw, ImageFont, Image
 
 async def hello(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update.message.reply_photo("https://i.ibb.co/R0Xmf2M/sss.png", caption=f'Hi <b>{update.message.from_user.first_name}</b>!,\n\nI am the all new <b>AI Gone Wild Bot</b>, I can generate NSFW/SFW images\
-                                    \n\nusing a range of different AI models. You can use the <b>/wild</b> followed by the prompt you want to generate your image with\
+    await update.message.reply_photo("https://i.ibb.co/R0Xmf2M/sss.png", caption=f'Hi <b>{update.message.from_user.first_name}</b>!,\n\nI am the all new <b>WILD AI Bot</b>,Ai Artwork telegram generator bot that generates hyperrealistic artworks in a matter of minutes.\
+                                    \n\nYou can use the <b>/wild</b> followed by the prompt you want to generate your image with\
                                         \n\neg.\n<i><b>/wild</b> 18 years old, blue eyes</i>\n\n',
                                     parse_mode=ParseMode.HTML
                                     )
