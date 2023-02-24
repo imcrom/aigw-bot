@@ -15,8 +15,8 @@ from PIL import ImageDraw, ImageFont, Image
 
 async def hello(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_photo("https://i.ibb.co/R0Xmf2M/sss.png", caption=f'Hi <b>{update.message.from_user.first_name}</b>!,\n\nI am the all new <b>AI Gone Wild Bot</b>, I can generate NSFW/SFW images\
-                                    \n\nusing a range of different AI models. You can use the <b>/aigw</b> followed by the prompt you want to generate your image with\
-                                        \n\neg.\n<i><b>/aigw</b> 18 years old, blue eyes</i>\n\n',
+                                    \n\nusing a range of different AI models. You can use the <b>/wild</b> followed by the prompt you want to generate your image with\
+                                        \n\neg.\n<i><b>/wild</b> 18 years old, blue eyes</i>\n\n',
                                     parse_mode=ParseMode.HTML
                                     )
 
@@ -28,7 +28,7 @@ async def gen(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if not inputs:
         await context.bot.send_message(
             chat_id=update.message.chat.id,
-            text=f'Hello {update.message.from_user.first_name}, Please enter the inputs after the /aigw command',
+            text=f'Hello {update.message.from_user.first_name}, Please enter the inputs after the /wild command',
         )
         return
 
@@ -275,6 +275,6 @@ persistence = PicklePersistence(filepath="arbitrarycallbackdatabot")
 app = ApplicationBuilder().token("5802517613:AAHuNfC7iUpDvOY3zpvmhOQfeVBbg-2mj5s").persistence(persistence).arbitrary_callback_data(True).build()
 
 app.add_handler(CommandHandler("start", hello))
-app.add_handler(CommandHandler("aigw", gen))
+app.add_handler(CommandHandler("wild", gen))
 app.add_handler(CallbackQueryHandler(getModel))
 app.run_polling()
