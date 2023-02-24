@@ -272,7 +272,7 @@ async def add_watermark(file_path: str, watermark_text: str, update: Update, con
                 
                     
 persistence = PicklePersistence(filepath="arbitrarycallbackdatabot")
-app = ApplicationBuilder().token("6173455658:AAGrQeUR51i4_4mm0sIvcxV-a_fwV1jK-Os").persistence(persistence).arbitrary_callback_data(True).build()
+app = ApplicationBuilder().token("5802517613:AAHuNfC7iUpDvOY3zpvmhOQfeVBbg-2mj5s").persistence(persistence).arbitrary_callback_data(True).build()
 
 app.add_handler(CommandHandler("start", hello))
 app.add_handler(CommandHandler("aigw", gen))
