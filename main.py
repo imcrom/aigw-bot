@@ -15,8 +15,8 @@ from PIL import ImageDraw, ImageFont, Image
 
 async def hello(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_photo("https://i.ibb.co/R0Xmf2M/sss.png", caption=f'Hi <b>{update.message.from_user.first_name}</b>!,\n\nI am the all new <b>WILD AI Bot</b>,Ai Artwork telegram generator bot that generates hyperrealistic artworks in a matter of minutes.\
-                                    \n\nYou can use the <b>/wild</b> followed by the prompt you want to generate your image with\
-                                        \n\neg.\n<i><b>/wild</b> release your creativity</i>\n\n',
+                                    \n\nYou can use the <b>/magic</b> followed by the prompt you want to generate your image with\
+                                        \n\neg.\n<i><b>/magic</b> release your creativity</i>\n\n',
                                     parse_mode=ParseMode.HTML
                                     )
 
@@ -28,7 +28,7 @@ async def gen(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if not inputs:
         await context.bot.send_message(
             chat_id=update.message.chat.id,
-            text=f'Hello {update.message.from_user.first_name}, Please enter the inputs after the /wild command',
+            text=f'Hello {update.message.from_user.first_name}, Please enter the inputs after the /magic command',
         )
         return
 
@@ -275,6 +275,6 @@ persistence = PicklePersistence(filepath="arbitrarycallbackdatabot")
 app = ApplicationBuilder().token("5802517613:AAHuNfC7iUpDvOY3zpvmhOQfeVBbg-2mj5s").persistence(persistence).arbitrary_callback_data(True).build()
 
 app.add_handler(CommandHandler("start", hello))
-app.add_handler(CommandHandler("wild", gen))
+app.add_handler(CommandHandler("magic", gen))
 app.add_handler(CallbackQueryHandler(getModel))
 app.run_polling()
