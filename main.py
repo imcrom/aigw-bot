@@ -14,7 +14,7 @@ import telegram
 from PIL import ImageDraw, ImageFont, Image
 
 async def hello(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update.message.reply_photo("https://i.ibb.co/R0Xmf2M/sss.png", caption=f'Hi <b>{update.message.from_user.first_name}</b>!,\n\nI am the all new <b>WILD AI Bot</b>,Ai Artwork telegram generator bot that generates hyperrealistic artworks in a matter of minutes.\
+    await update.message.reply_photo("https://i.ibb.co/R0Xmf2M/sss.png", caption=f'Hi <b>{update.message.from_user.first_name}</b>!,\n\nI am the all new <b>Magic AI Bot</b>,Ai Artwork telegram generator bot that generates hyperrealistic artworks in a matter of minutes.\
                                     \n\nYou can use the <b>/magic</b> followed by the prompt you want to generate your image with\
                                         \n\neg.\n<i><b>/magic</b> release your creativity</i>\n\n',
                                     parse_mode=ParseMode.HTML
@@ -35,12 +35,12 @@ async def gen(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     inline_keyboard = InlineKeyboardMarkup(
         [
             [
-                InlineKeyboardButton("AIGW-Realistic", callback_data={'prompt': prompt, 'model': 'realistic-vision-v13', 'username': update.message.from_user.first_name}),
-                InlineKeyboardButton("AIGW-Protogen", callback_data={'prompt': prompt, 'model': 'protogen-3.4', 'username': update.message.from_user.first_name})
+                InlineKeyboardButton("MGC-Realistic", callback_data={'prompt': prompt, 'model': 'realistic-vision-v13', 'username': update.message.from_user.first_name}),
+                InlineKeyboardButton("MGC-Protogen", callback_data={'prompt': prompt, 'model': 'protogen-3.4', 'username': update.message.from_user.first_name})
             ],
             [
-                InlineKeyboardButton("AIGW-Analog Diffusion", callback_data={'prompt': prompt, 'model': 'analog-diffusion', 'username': update.message.from_user.first_name}),
-                InlineKeyboardButton("AIGW-AnythingV4", callback_data={'prompt': prompt, 'model': 'anything-v4', 'username': update.message.from_user.first_name}),
+                InlineKeyboardButton("MGC-Analog Diffusion", callback_data={'prompt': prompt, 'model': 'analog-diffusion', 'username': update.message.from_user.first_name}),
+                InlineKeyboardButton("MGC-AnythingV4", callback_data={'prompt': prompt, 'model': 'anything-v4', 'username': update.message.from_user.first_name}),
             ]
         ]
     )
@@ -230,7 +230,7 @@ async def send_image(update: Update, file_name: str, prompt: str, model: str, do
         
         await context.bot.send_photo(
             chat_id=update.chat.id,
-            caption= f'Image request of: <b>{username}\n\n</b><b>Successful creation with aigw-{model}</b>!\n\nPrompt:\n(<b>{prompt}</b>)\n\nModel: <b>aigw-{model}</b>\n\n<a target="_blank">https://aigonewild.org/</a>',
+            caption= f'Image request of: <b>{username}\n\n</b><b>Successful creation with mgc-{model}</b>!\n\nPrompt:\n(<b>{prompt}</b>)\n\nModel: <b>mgc-{model}</b>\n\n<a target="_blank">https://magic-ai.org/</a>',
             photo=telegram.InputFile(file),
             parse_mode=ParseMode.HTML,
             reply_markup=InlineKeyboardMarkup([[
