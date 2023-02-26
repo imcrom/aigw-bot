@@ -196,7 +196,7 @@ async def downloadImage(id: int, downloadUrl: str, update: Update, prompt: str, 
                     f = await aiofiles.open(f'{id}.png', mode='wb')
                     await f.write(await resp.read())
                     # call watermark function
-                    if await add_watermark(f'{id}.png', 'https://t.me/aigonewild', update, context, username) == False:
+                    if await add_watermark(f'{id}.png', 'https://magic-ai.org/', update, context, username) == False:
                         await send_image(update, id, prompt, model, downloadUrl, context, username)
                         os.remove(f'{id}.png')
                         os.remove(f'{id}_watermarked.png')
