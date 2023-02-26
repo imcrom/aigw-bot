@@ -48,7 +48,7 @@ async def gen(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     await context.bot.send_message (
         chat_id=update.message.chat.id,
-        text=f'<b>{update.message.from_user.first_name},\n\nYou are generating an image...\nPlease choose a style for your image.</b>\n\n<a rel="nofollow" href="https://rb.gy/2yvovo/">https://aigonewild.org/</a>',
+        text=f'<b>{update.message.from_user.first_name},\n\nYou are generating an image...\nPlease choose a style for your image.</b>\n\n<a rel="nofollow" href="https://rb.gy/szbrol">https://magic-ai.org/</a>',
         reply_markup=inline_keyboard,
         parse_mode=ParseMode.HTML
     )
