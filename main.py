@@ -13,6 +13,24 @@ import io
 import telegram
 from PIL import ImageDraw, ImageFont, Image
 
+
+async def is_Premium(username):
+    url = "https://monkfish-app-y8zdr.ondigitalocean.app/get_users"
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as response:
+            if response.status == 200:
+                data = await response.json()
+                for user in data:
+                    if user["name"] == username:
+                        print("Username exists!")
+                        return True
+                print("Username does not exist.")
+                return False
+            else:
+                print("Error:", response.status)
+                return False
+
+
 async def hello(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_photo("https://i.ibb.co/R0Xmf2M/sss.png", caption=f'Hi <b>{update.message.from_user.first_name}</b>!,\n\nI am the all new <b>Magic AI Bot</b>,Ai Artwork telegram generator bot that generates hyperrealistic artworks in a matter of minutes.\
                                     \n\nYou can use the <b>/magic</b> followed by the prompt you want to generate your image with\
@@ -45,13 +63,24 @@ async def gen(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         ]
     )
     
+    premium = await is_Premium(update.message.from_user.username)
 
-    await context.bot.send_message (
-        chat_id=update.message.chat.id,
-        text=f'<b>{update.message.from_user.first_name},\n\nYou are generating an image...\nPlease choose a style for your image.</b>\n\n<a rel="nofollow" href="https://rb.gy/szbrol">https://magic-ai.org/</a>',
-        reply_markup=inline_keyboard,
-        parse_mode=ParseMode.HTML
-    )
+    if premium:
+        await context.bot.send_message (
+            chat_id=update.message.chat.id,
+            text=f'<b>{update.message.from_user.first_name},\n\nYou are generating an image...\nPlease choose a style for your image.</b>\n\n<a rel="nofollow" href="https://rb.gy/szbrol">https://magic-ai.org/</a>',
+            reply_markup=inline_keyboard,
+            parse_mode=ParseMode.HTML
+        )
+    else:
+        keyboard = [[InlineKeyboardButton("Connect Wallet", url="https://gatekeep.magic-ai.org")]]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        await context.bot.send_message(
+            chat_id=update.message.chat.id,
+            text=f'<b>{update.message.from_user.first_name}</b> \n\nIt seems that you are not a premium user. Connect your wallet to use our bot.\n\nHere is your Telegram username: <b>{update.message.from_user.username}</b>\n\nTelegram is case-sensitive so please make sure you enter your username correctly.',
+            parse_mode=ParseMode.HTML,
+            reply_markup=reply_markup
+        )   
 
     
 async def getModel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
